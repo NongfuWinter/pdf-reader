@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import Test1 from './Test1.vue'
+import PdfView from './PdfView.vue';
 </script>
 
 <template>
   <Suspense>
-    <Test1 :pageNumber="10"></Test1>
+    <PdfView :pageNumber="10"></PdfView>
   </Suspense>
 </template>
 
@@ -13,3 +13,4 @@ import Test1 from './Test1.vue'
   color: #888;
 }
 </style>
+./pdfView.vue./PdfView.vue

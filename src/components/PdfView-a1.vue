@@ -53,6 +53,8 @@ class PageNode{
           console.log('load number is: ', this.number,  this.id, entries[0].intersectionRatio);
           if(!entries[0].isIntersecting){
             return
+          }else{
+            pdfView.value!.style.overflowY = "hidden"
           }
           const newPageNode = new PageNode(this.number, PageNodeTypes.CANVAS)
           if(this.next!.number - this.prior!.number == 2){
@@ -106,11 +108,28 @@ class PageNode{
     }
   }
 
-  insert(priorNode: PageNode, nextNode:PageNode){
-    this.prior = priorNode
-    this.next = nextNode
-    priorNode.next = this
-    nextNode.prior = this
+  connect(priorNode: PageNode|null, nextNode:PageNode|null){
+    if(priorNode != null){
+      this.prior = priorNode
+      priorNode.next = this
+    }
+
+    if(nextNode != null){
+      this.next = nextNode
+      nextNode.prior = this
+    }
+  }
+
+  disengage(){
+    if(this.prior != null){
+      this.prior.next = null
+      this.prior = null
+    }
+
+    if(this.next != null){
+      this.next.prior = null
+      this.next = null
+    }
   }
 
   deleteCanvas(){
@@ -118,24 +137,28 @@ class PageNode{
 
     if(this.prior!.type != PageNodeTypes.LOAD && this.next!.type != PageNodeTypes.LOAD){
       let newLoadNode = new PageNode(this.number, PageNodeTypes.LOAD)
-      newLoadNode.insert(this.prior!, this.next!)
-    }else if(this.prior!.type == PageNodeTypes.LOAD && this.prior!.prior!.type != PageNodeTypes.CANVAS){
+      newLoadNode.connect(this.prior, this.next)
+      console.log('create new loadNode: ', newLoadNode);
+      
+    }else if(this.prior!.type == PageNodeTypes.LOAD){
       this.prior!.number++
       this.prior!.next = this.next
       this.next!.prior = this.prior
-      console.error('2');
       
-    }else if(this.next!.type == PageNodeTypes.LOAD && this.next!.next!.type != PageNodeTypes.CANVAS){
+    }else if(this.next!.type == PageNodeTypes.LOAD){
       this.next!.number--
       this.prior!.next = this.next
       this.next!.prior = this.prior
-      console.error('3');
+
+    }else{
+      console.log('4', this.prior, this.next);
+      
     }
   
     this.prior = null
     this.next = null
     triggerRef(pageLinkList)
-    console.log('%cdelete success!', 'color: green', this);
+    console.log('%cdelete success!', 'color: green');
   }
 }
 
@@ -144,10 +167,10 @@ class PageLinkList{
   tail: PageNode
 
   constructor(initailNumber: number, maxNumber: number){
-    const tail = new PageNode(pdfDoc.numPages+1)
     const head = new PageNode(0)
+    const tail = new PageNode(pdfDoc.numPages+1)
     const initailNode = new PageNode(initailNumber, PageNodeTypes.CANVAS)
-    initailNode.insert(tail, head)
+    initailNode.connect(head, tail)
     this.head = head
     this.tail = tail
     currentNode = initailNode
@@ -158,11 +181,11 @@ class PageLinkList{
     }
     if(initailNumber != 1){
       const node = new PageNode(initailNumber-1, PageNodeTypes.LOAD)
-      node.insert(head, initailNode)
+      node.connect(head, initailNode)
     }
     if(initailNumber != maxNumber){
       const node = new PageNode(initailNumber+1, PageNodeTypes.LOAD)
-      node.insert(initailNode, tail)
+      node.connect(initailNode, tail)
     }
   }
 
@@ -441,7 +464,10 @@ const vCanvasRef = {
     pageNode.initObserver()
     pageNode.observe()
     renderPage(pageNode).then(()=>{
+      pdfView.value!.style.overflowY = "auto"
       routeLinkList.insert(pageNode)
+      console.log(pageNode, pageLinkList.value);
+      
       handleScroll()
     })
   },
@@ -471,8 +497,8 @@ function t1(event: any){
         <template v-for="pnode of pageLinkList" :key="pnode.id">
           <template v-if="(pnode instanceof PageNode)">
             <p>{{ pnode.number }}</p>
-            <div class="loading" v-load-ref="pnode" v-if="(pnode.type == PageNodeTypes.LOAD)"><p>loading</p></div>
-            <canvas v-canvas-ref="pnode" @click="t1($event)" v-else></canvas>
+            <div class="loading" v-load-ref="pnode" v-if="(pnode.type == PageNodeTypes.LOAD)"><p>loading......</p></div>
+            <canvas :id="String(pnode.number)" v-canvas-ref="pnode" @click="t1($event)" v-else></canvas>
           </template>
         </template>
       </div>
@@ -489,7 +515,6 @@ function t1(event: any){
 
 .base{
   height: 500px;
-  background-color: black;
   display: flex;
   flex-direction: column;
 }
@@ -515,12 +540,16 @@ function t1(event: any){
       justify-content:center;
       height: 3rem;
       font-size: 1rem;
-      background-color: red;
+      background-color: #161823;
     }
   }
   .pdfList>*{
     min-width: 0;
     flex: 1;
+  }
+
+  .editor{
+    background-color: #161823;
   }
 
   .note{
