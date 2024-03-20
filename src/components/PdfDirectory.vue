@@ -40,18 +40,21 @@ onMounted(()=>{
   
 </template>
 
-<style lang="less">
+<style scoped lang="less">
 .options{
   display: flex;
   flex-direction: row;
   padding: 0.5rem 0;
+  color: #111;
+  border-bottom: #000 solid 1px;
   
   li{
-
     border-right: #999 solid 1px;
     &:last-child{
     border-right: none;
-
+    }
+    &:hover{
+      background: #000;
     }
   }
   

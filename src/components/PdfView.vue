@@ -701,7 +701,7 @@ function t1(event: any){
 
 <template>
   <div class="base" :style="{width: style.windowInWidth+'px', height: style.windowInHeight+'px'}">
-    <nav>导航</nav>
+    <nav class="main-nav">导航</nav>
     <div class="list">
       <div class="editor" @click="test($event)">
         <PdfDirectory></PdfDirectory>
@@ -735,6 +735,13 @@ function t1(event: any){
   display: flex;
   flex-direction: column;
 }
+.main-nav{
+  background: #aaa;
+  height: 4rem;
+  border-bottom: #555 solid 1px;
+  color: #000;
+}
+
 .list{
   display: flex;
   flex: 1;
@@ -766,11 +773,11 @@ function t1(event: any){
   }
 
   .editor{
-    background-color: #161823;
+    background-color: #ccc;
   }
 
   .note{
-    background-color: rebeccapurple;
+    background-color: #ccc;
   }
 }
 </style>

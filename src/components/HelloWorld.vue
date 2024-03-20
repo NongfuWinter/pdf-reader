@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import PdfView from './PdfView.vue';
+
+
 </script>
 
 <template>
@@ -13,4 +15,3 @@ import PdfView from './PdfView.vue';
   color: #888;
 }
 </style>
-./pdfView.vue./PdfView.vue

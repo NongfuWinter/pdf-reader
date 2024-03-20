@@ -1,73 +1,100 @@
 <script setup lang="ts">
-interface Tree {
-  label: string
-  children?: Tree[]
+
+class Tree{
+  content: string
+  parent: Tree
+  child: Array<Tree>
+   
+  constructor(){
+    this.content = ''
+    this.parent = new Tree()
+    this.child = new Array<Tree>()
+  }
+
+  
 }
-const data: Tree[] = [
-  {
-    label: 'Level one 1',
-    children: [
-      {
-        label: 'Level two 1-1',
-        children: [
-          {
-            label: 'Level three 1-1-1',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Level one 2',
-    children: [
-      {
-        label: 'Level two 2-1',
-        children: [
-          {
-            label: 'Level three 2-1-1',
-          },
-        ],
-      },
-      {
-        label: 'Level two 2-2',
-        children: [
-          {
-            label: 'Level three 2-2-1',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Level one 3',
-    children: [
-      {
-        label: 'Level two 3-1',
-        children: [
-          {
-            label: 'Level three 3-1-1',
-          },
-        ],
-      },
-      {
-        label: 'Level two 3-2',
-        children: [
-          {
-            label: 'Level three 3-2-1',
-          },
-        ],
-      },
-    ],
-  },
-]
+
+function t(event: any){
+  const a = event.currentTarget as HTMLElement
+  if(a.parentElement != null){
+    a.parentElement.style.backgroundColor = '#888'
+    
+  }
+}
+
+
 </script>
 
 <template>
-    <el-tree class="a" :data="data"/>
+<div class="base">
+  <div class="parent">
+    <div class="content" @click="t($event)">
+      <p>第一章***********</p>
+      <i class="bi bi-chevron-right"></i>
+    </div>
+    <div class="children">
+      <div class="parent">
+        <div class="content">
+          <p>1-1</p>
+          <i class="bi bi-chevron-right"></i>
+        </div>
+      </div>
+      <div class="parent">
+        <div class="content">
+          <p>1-2</p>
+          <i class="bi bi-chevron-right"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="parent">
+    <div class="content" @click="t($event)">
+      <p>1</p>
+      <i class="bi bi-chevron-right"></i>
+    </div>
+    <div class="children">
+      <div class="parent">
+        <div class="content">
+          <p>1-1</p>
+          <i class="bi bi-chevron-right"></i>
+        </div>
+      </div>
+      <div class="parent">
+        <div class="content">
+          <p>1-2</p>
+          <i class="bi bi-chevron-right"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </template>
 
-<style scoped>
-.a:last-child:hover{
-    background-color: red;
+<style scoped lang="less">
+.base{
+  border: #555 solid 5px;
+  padding: 1rem 1rem;
+}
+
+.parent{
+  // background-color: #999;
+  border-radius: 1rem;
+}
+
+.content{
+  display: flex;
+  padding: 0.6rem 1rem;
+  // background-color: #fff;
+  p{
+    margin: 0 4rem 0 0;
+  }
+  i{
+    // width: 4rem;
+    // // height: 2rem;
+  }
+}
+
+.children{
+  margin-left: 2rem;
 }
 </style>
