@@ -18,15 +18,15 @@ let chooseLable = ref(0)
 
 
 let list = ref(new Array())
-onMounted(()=>{
-    list.value.push(2)
-    list.value.push(2)
+onMounted(() => {
+  list.value.push(2)
+  list.value.push(2)
 })
 </script>
 
 
 <template>
-  <nav >
+  <nav>
     <ul class="options">
       <li v-for="lable, index in lables" @click="chooseLable = index">
         {{ lable }}
@@ -37,34 +37,36 @@ onMounted(()=>{
   <div>
     <component :is="components[chooseLable]"></component>
   </div>
-  
+
 </template>
 
 <style scoped lang="less">
-.options{
+.options {
   display: flex;
   flex-direction: row;
   padding: 0.5rem 0;
   color: #111;
   border-bottom: #000 solid 1px;
-  
-  li{
+
+  li {
     border-right: #999 solid 1px;
-    &:last-child{
-    border-right: none;
+
+    &:last-child {
+      border-right: none;
     }
-    &:hover{
+
+    &:hover {
       background: #000;
     }
   }
-  
 
-  &>*{
+
+  &>* {
     flex-grow: 1;
   }
 }
 
-.a{
+.a {
   background-color: #000;
 }
 </style>
