@@ -6,25 +6,36 @@ const props = defineProps({
     type: Tree,
     default: new Tree(),
     require: true
-  } 
+  }
 })
 
 let isLeavesOpen = ref(false)
 
-function t(event: any){
+function t(event: any) {
   isLeavesOpen.value = !isLeavesOpen.value
-  
+
 }
 </script>
 
 <template>
   <div class="root">
     <div class="content" @click="t($event)">
-      <p>{{ props.tree.content }}</p>
-      <i class="bi bi-chevron-right"></i>
+      <div class="title">
+        <p>{{ props.tree.content }}</p>
+        <i class="bi bi-chevron-right"></i>
+      </div>
+
+      <div class="operation">
+        <i class="bi bi-plus-square" style="color: #2a0;"></i>
+        <i class="bi bi-x-square" style="color: #d20;"></i>
+      </div>
     </div>
-    <div class="leaves" :class="{open: isLeavesOpen}" v-for="leaf in props.tree">
-      <TreeView v-if="leaf!=null" :tree="leaf"></TreeView>
+    <div class="leaves" :class="{ open: isLeavesOpen }">
+      <div>
+        <template  v-for="leaf in props.tree">
+          <TreeView v-if="leaf != null" :tree="leaf"></TreeView>
+        </template>
+      </div>
     </div>
   </div>
 </template>
@@ -36,18 +47,27 @@ function t(event: any){
   border-radius: 1rem;
 }
 
+
 .content {
   display: flex;
+  flex-shrink: 0;
   padding: 0.6rem 1rem;
+  justify-content: space-between;
+  align-items: center;
 
-  // background-color: #fff;
-  p {
-    margin: 0 2rem 0 0;
+  .title {
+    display: flex;
+    align-items: center;
+    p {
+      vertical-align: middle;
+      margin: 0 1rem 0 0;
+    }
   }
 
-  i {
-    // width: 4rem;
-    // height: 2rem;
+  .operation {
+    &>*{
+      margin-right: 2rem;
+    }
   }
 }
 
@@ -55,15 +75,16 @@ function t(event: any){
   display: grid;
   grid-template-rows: 0fr;
   margin-left: 2rem;
-  overflow-y: hidden;
-  transition: .2s;
+  overflow: hidden;
+  transition: .3s;
 
-  &>*{
+  &>div {
     min-height: 0;
   }
 }
 
-.open{
+
+.open {
   grid-template-rows: 1fr;
 }
 </style>

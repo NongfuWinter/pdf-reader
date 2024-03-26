@@ -6,6 +6,7 @@ let root = new Tree('root')
 let a = new Tree('a')
 a.leaves = new Tree('a leaf 1')
 a.leaves.next = new Tree('a leaf 2')
+a.leaves.next.next = new Tree('a leaf 3')
 let b = new Tree('b')
 b.leaves = new Tree('b leaf')
 b.leaves.leaves = new Tree('b leaf\'s leaf')
@@ -23,7 +24,7 @@ a.next = b
 
 <style scoped lang="less">
 .base {
-  border: #555 solid 5px;
+  border: #555 solid 2px;
   padding: 0.1rem 0.5rem;
 }
 </style>
