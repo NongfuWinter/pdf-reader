@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Tree } from './Tree'
+import { Tree, STATE } from './TreeStruct'
 const props = defineProps({
+  state: {
+    type: String as ()=>STATE,
+    default: STATE.CHECK,
+    require: true,
+  },
   tree: {
     type: Tree,
     default: new Tree(),
-    require: true
-  }
+    require: true,
+  },
 })
 
 let isLeavesOpen = ref(false)
@@ -15,17 +20,22 @@ function t(event: any) {
   isLeavesOpen.value = !isLeavesOpen.value
 
 }
+
+function drag(event: any){
+  event.target.classList.add("dragging");
+}
 </script>
 
 <template>
-  <div class="root">
+  <div class="root" draggable="true" @drag="drag($event)">
     <div class="content" @click="t($event)">
       <div class="title">
         <p>{{ props.tree.content }}</p>
-        <i class="bi bi-chevron-right"></i>
+        <i class="bi bi-chevron-right" v-if="props.tree.leaves != null"></i>
       </div>
 
-      <div class="operation">
+      <div class="operation" v-if="props.state == STATE.EDIT">
+        <i class="bi bi-pencil-square" style="color: #25d;"></i>
         <i class="bi bi-plus-square" style="color: #2a0;"></i>
         <i class="bi bi-x-square" style="color: #d20;"></i>
       </div>
@@ -47,6 +57,13 @@ function t(event: any) {
   border-radius: 1rem;
 }
 
+.root:hover{
+  cursor: grab;
+}
+
+.dragging{
+  opacity: 1;
+}
 
 .content {
   display: flex;
@@ -65,8 +82,11 @@ function t(event: any) {
   }
 
   .operation {
-    &>*{
-      margin-right: 2rem;
+    &>i{
+      margin-right: 1rem;
+    }
+    i:last-child{
+      margin-right: 0;
     }
   }
 }
@@ -82,7 +102,6 @@ function t(event: any) {
     min-height: 0;
   }
 }
-
 
 .open {
   grid-template-rows: 1fr;

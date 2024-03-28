@@ -23,3 +23,8 @@ export class Tree {
     }
   }
 }
+
+export enum STATE{
+  CHECK = 'check',
+  EDIT = 'edit',
+}

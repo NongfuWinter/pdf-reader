@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, VueElement } from 'vue'
+import { ref, onMounted } from 'vue'
 import Info from './pdfDirectory/Info.vue'
 import Directory from './pdfDirectory/Directory.vue'
 
@@ -16,7 +16,6 @@ const components = [Directory, Info]
 
 let chooseLable = ref(0)
 
-
 let list = ref(new Array())
 onMounted(() => {
   list.value.push(2)
@@ -26,13 +25,16 @@ onMounted(() => {
 
 
 <template>
-  <nav>
-    <ul class="options">
-      <li v-for="lable, index in lables" @click="chooseLable = index">
+
+ 
+    <ul class="lables">
+      <li><i class="bi bi-chevron-right"></i></li>
+      <li v-for="lable, index in lables" @click="chooseLable = index"
+      :class="{'active':(chooseLable==index)}">
         {{ lable }}
       </li>
     </ul>
-  </nav>
+
 
   <div>
     <component :is="components[chooseLable]"></component>
@@ -41,28 +43,29 @@ onMounted(() => {
 </template>
 
 <style scoped lang="less">
-.options {
+.lables {
   display: flex;
   flex-direction: row;
-  padding: 0.5rem 0;
   color: #111;
-  border-bottom: #000 solid 1px;
+  border-bottom: #aaa solid 1px;
+  
 
   li {
-    border-right: #999 solid 1px;
+    padding: 0.7rem 2rem;
+
+    &:first-child{
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
 
     &:last-child {
       border-right: none;
     }
-
-    &:hover {
-      background: #000;
-    }
   }
 
-
-  &>* {
-    flex-grow: 1;
+  .active {
+    // background: #9be;
+    color: #4a8;
   }
 }
 

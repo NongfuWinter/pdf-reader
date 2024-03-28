@@ -736,10 +736,9 @@ function t1(event: any){
   flex-direction: column;
 }
 .main-nav{
-  background: #aaa;
+  // background: #aaa;
   height: 4rem;
-  border-bottom: #555 solid 1px;
-  color: #000;
+  border-bottom: #aaa solid 1px;
 }
 
 .list{
@@ -757,7 +756,9 @@ function t1(event: any){
     flex-direction: column;
     height: 100%;
     overflow-y: auto;
-
+    border-left: #ccc solid 2px;
+    border-right: #ccc solid 2px;
+    
     .loading{
       display:flex;
       flex-direction: column;
@@ -772,12 +773,12 @@ function t1(event: any){
     flex: 1;
   }
 
-  .editor{
-    background-color: #ccc;
-  }
+  // .editor{
+  //   // background-color: #ccc;
+  // }
 
-  .note{
-    background-color: #ccc;
-  }
+  // .note{
+  //   // background-color: #ccc;
+  // }
 }
 </style>
