@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Tree, STATE } from './TreeStruct'
+import { Tree, STATE } from './Struct'
 const props = defineProps({
   state: {
     type: String as ()=>STATE,

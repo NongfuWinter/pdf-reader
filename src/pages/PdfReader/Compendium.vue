@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import Info from './pdfDirectory/Info.vue'
-import Directory from './pdfDirectory/Directory.vue'
+import Info from './Info.vue'
+import Directory from './Directory.vue'
 
 const props = defineProps({
   index: {

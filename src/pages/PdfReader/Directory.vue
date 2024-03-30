@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Tree, STATE } from './TreeStruct'
-import TreeView from './TreeView.vue';
+import { Tree, STATE } from '@/components/TreeDirectory/Struct'
+import TreeView from '@/components/TreeDirectory/TreeView.vue';
 import { ref } from 'vue'
 
 let root = new Tree('root')
@@ -23,7 +23,7 @@ function drag(event: any){
 
 <template>
   <div class="base">
-    <ul class="nav">
+    <ul class="nav">  
       <li>
         <i class="bi bi-chevron-right"></i>
         <i class="bi bi-chevron-right"></i>
@@ -71,4 +71,4 @@ function drag(event: any){
       color: #4a8; 
     }
 }
-</style>./TreeStruct
+</style>

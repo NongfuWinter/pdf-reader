@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useStyleStore } from '@/stores'
-import HelloWorld from './components/HelloWorld.vue'
 import { onBeforeMount} from 'vue'
+import Index from '@/pages/Index.vue'
 
 const style = useStyleStore()
 
@@ -19,9 +19,7 @@ onBeforeMount(()=>{
 </script>
 
 <template>
-  <HelloWorld/>
+  <Suspense>
+    <Index></Index>
+  </Suspense>
 </template>
-
-<style>
-
-</style>

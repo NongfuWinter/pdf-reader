@@ -12,7 +12,8 @@
     "bootstrap-icons": "^1.11.3",
     "less": "^4.2.0",
     "pinia": "^2.1.7",
-    "vue": "^3.3.8"
+    "vue": "^3.3.8",
+    "vue-router": "^4.3.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.2",
