@@ -1,29 +1,51 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
+const router = useRouter()
+function t(){
+  router.push({path: '/pdfReader'})
+}
 
+function f(){
+  router.push({path: '/'})
+}
 </script>
 
 <template>
   <div class="base">
-    <nav class="nav">导航</nav>
-    <RouterView></RouterView>
+    <nav class="nav">
+      <p @click="f()">导航</p>
+      <p @click="t()">pdf-read</p>
+    </nav>
+    <div class="content">
+      <RouterView></RouterView>
+    </div>
   </div>
 </template>
 
-<style lang="less" scoped>
-//@width = 5rem;
-
+<style scoped lang="less">
 .base{
-  height: 500px;
   display: flex;
+  flex-grow: 1;
   flex-direction: column;
+  align-items: stretch;
+}
 
-  &>*{
-    flex-grow: 1;
+.nav{
+  display: flex;
+  flex-direction: row;
+  height: 3rem;
+  border-bottom: #aaa solid 1px;
+  align-items: center;
+  justify-items: center;
+
+  p{
+    padding: 0 1rem;
   }
 }
-.nav{
-  height: 4rem;
-  border-bottom: #aaa solid 1px;
-  
+
+.content{
+  display: flex;
+  flex-grow: 1;
+  place-items: center;
 }
 </style>

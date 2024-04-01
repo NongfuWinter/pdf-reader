@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onBeforeMount, ref, shallowRef, triggerRef, nextTick, watch} from 'vue';
+import { onMounted, ref, shallowRef, triggerRef, nextTick, watch} from 'vue';
 import { useStyleStore } from '@/stores'
 import PdfDirectory from './Compendium.vue'
 import * as pdfjs from 'pdfjs-dist'
@@ -517,7 +517,7 @@ class RouteLinkList{
 const props = defineProps({
   pageNumber: {
     type: Number,
-    default: 1,
+    default: 10,
   }
   
 })
@@ -701,7 +701,6 @@ function t1(event: any){
 
 <template>
   <div class="base" :style="{width: style.windowInWidth+'px', height: style.windowInHeight+'px'}">
-    <nav class="main-nav">导航</nav>
     <div class="list">
       <div class="editor" @click="test($event)">
         <PdfDirectory></PdfDirectory>
@@ -734,11 +733,6 @@ function t1(event: any){
   height: 500px;
   display: flex;
   flex-direction: column;
-}
-.main-nav{
-  // background: #aaa;
-  height: 4rem;
-  border-bottom: #aaa solid 1px;
 }
 
 .list{

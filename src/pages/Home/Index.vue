@@ -1,3 +1,11 @@
 <template>
-  <p>HOME</p>
+  <div>
+    <p>HOME</p>
+  </div>
 </template>
+
+<style scoped lang="less">
+div{
+  
+}
+</style>

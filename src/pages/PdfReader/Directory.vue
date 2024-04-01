@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { Tree, STATE } from '@/components/TreeDirectory/Struct'
+import { Tree, Communication } from '@/components/TreeDirectory/Struct'
 import TreeView from '@/components/TreeDirectory/TreeView.vue';
-import { ref } from 'vue'
+import { ref, provide } from 'vue'
+
+let treeCommuni = new Communication()
+provide('treeCommuni', treeCommuni)
 
 let root = new Tree('root')
 let a = new Tree('a')
@@ -14,30 +17,13 @@ b.leaves.leaves = new Tree('b leaf\'s leaf')
 root.leaves = a
 a.next = b
 
-let state = ref(STATE.CHECK)
-
-function drag(event: any){
-  console.log(event.clientX, event); 
-}
 </script>
 
 <template>
   <div class="base">
-    <ul class="nav">  
-      <li>
-        <i class="bi bi-chevron-right"></i>
-        <i class="bi bi-chevron-right"></i>
-      </li>
-      <li :class="{'active': state==STATE.CHECK}" @click="state=STATE.CHECK">
-        查看
-      </li>
-      <li :class="{'active': state==STATE.EDIT}" @click="state=STATE.EDIT">
-        编辑
-      </li>
-    </ul>
     <div class="main">
       <template v-for="leaf in root">
-        <TreeView v-if="leaf != null" :tree="leaf" :state="state" @click="drag($event)"></TreeView>
+        <TreeView v-if="leaf != null" :tree="leaf"></TreeView>
       </template>
     </div>
   </div>
@@ -70,5 +56,11 @@ function drag(event: any){
   .active {
       color: #4a8; 
     }
+}
+
+.flutter{
+  position: absolute;
+  background-color: #ccc;
+  pointer-events: auto;
 }
 </style>
