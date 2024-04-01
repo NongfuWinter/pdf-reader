@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, inject } from 'vue'
+import { ref, inject, onMounted, nextTick } from 'vue'
 import { Tree, Communication } from './Struct'
 const props = defineProps({
   tree: {
@@ -11,14 +11,10 @@ const props = defineProps({
 
 let treeCommuni = inject('treeCommuni') as Communication
 
-let titleView = ref<HTMLElement | null>(null)
+let selfView = ref<HTMLElement | null>(null)
 let isLeavesOpen = ref(false)
 let isBeChoosed = ref(false)
-
-function t(event: any) {
-  isLeavesOpen.value = !isLeavesOpen.value
-
-}
+let isDraging = ref(false)
 
 function titleContextmenu(event: any){
   isBeChoosed.value = true
@@ -27,30 +23,41 @@ function titleContextmenu(event: any){
 
 function drag(event: any){
   let target = event.currentTarget
-  target.classList.add('flutter')
-  window.addEventListener('mousemove', (e)=>{
-    target.style.left = e.clientX+'px'
-    target.style.top = e.clientY+'px'
-    
+  const diff = event.clientY - selfView.value!.offsetTop
+  selfView.value!.style.height = selfView.value!.clientHeight+'px'
+  nextTick(()=>{
+    selfView.value!.classList.add('flutter')
+    selfView.value!.style.height = '0.5rem'
   })
+  
+
+  // window.addEventListener('mousemove', (e)=>{
+  //   selfView.value!.style.top = e.clientY - diff +'px'
+  //   selfView.value!.style.left = '5rem'
+  // })
 }
+
+onMounted(()=>{
+})
 </script>
 
 <template>
-  <div class="root" :class="{'root-choosed':isBeChoosed}">
-    <div class="title" ref="titleView"
+  <div class="root" ref="selfView" :class="{'root-choosed':isBeChoosed}">
+    <div class="title" 
     :class="{'title-choosed':isBeChoosed}" 
-    @click="isLeavesOpen = !isLeavesOpen"
-    @contextmenu.prevent="titleContextmenu($event)"
     >
-      <div class="content">
+      <div class="content"
+      @click="isLeavesOpen = !isLeavesOpen"
+      @contextmenu.prevent="titleContextmenu($event)"
+      >
         <p>{{ props.tree.content }}</p>
-        <i class="bi bi-chevron-right" 
-        :class="{'i-tramsition': isLeavesOpen}"
+        <i class="bi bi-chevron-right" :class="{'i-tramsition': isLeavesOpen}"
         v-if="props.tree.leaves != null"></i>
       </div>
 
       <div class="operation" v-if="isBeChoosed">
+        <i class="bi bi-grip-horizontal" style="color: #333;"
+        @click="drag($event)"></i>
         <i class="bi bi-pencil-square" style="color: #25d;"></i>
         <i class="bi bi-plus-square" style="color: #2a0;"></i>
         <i class="bi bi-x-square" style="color: #d20;"></i>
@@ -71,27 +78,28 @@ function drag(event: any){
   display: flex;
   flex-direction: column;
   border-radius: 1rem;
-  // background-color: red;
+  transition: all 1s;
 }
 
-.root-choosed{
+.root-choosed {
   background-color: #ddd;
 }
 
-.dragging{
+.dragging {
   opacity: 1;
 }
 
 .title {
   display: flex;
   flex-shrink: 0;
-  padding: 0.6rem 1rem;
   justify-content: space-between;
   align-items: center;
-
+  
   .content{
     display: flex;
+    flex-grow: 1;
     align-items: center;
+    padding: 0.6rem 1rem;
     p {
       vertical-align: middle;
       margin: 0 1.5rem 0 0;
@@ -105,6 +113,7 @@ function drag(event: any){
   }
 
   .operation {
+    padding: 0.6rem 1rem;
     &>i{
       margin-right: 1rem;
     }
@@ -132,5 +141,15 @@ function drag(event: any){
 
 .open {
   grid-template-rows: 1fr;
+}
+
+.flutter{
+  // position: absolute;
+
+  height: 0px;
+  
+
+  background-color: #999;
+  pointer-events: auto;
 }
 </style>

@@ -16,51 +16,28 @@ b.leaves = new Tree('b leaf')
 b.leaves.leaves = new Tree('b leaf\'s leaf')
 root.leaves = a
 a.next = b
+let c = new Tree('c')
+b.next = c
+let d = new Tree('d')
+c.next = d
 
 </script>
 
 <template>
   <div class="base">
-    <div class="main">
-      <template v-for="leaf in root">
-        <TreeView v-if="leaf != null" :tree="leaf"></TreeView>
-      </template>
-    </div>
+    <template v-for="leaf in root">
+      <TreeView v-if="leaf != null" :tree="leaf"></TreeView>
+    </template>
   </div>
 </template>
 
 <style scoped lang="less">
 .base {
-  // border: #555 solid 1px;
-  // padding: 0.1rem 0.5rem;
-}
-
-.main{
-  padding: 1rem;
-}
-
-.nav{
+  flex-grow: 1;
   display: flex;
-  border-bottom: #aaa solid 1px;
-
-  li{
-    padding: 0.7rem 2rem;
-    // flex-grow: 1;
-
-    &:first-child{
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }    
-  }
-
-  .active {
-      color: #4a8; 
-    }
-}
-
-.flutter{
-  position: absolute;
-  background-color: #ccc;
-  pointer-events: auto;
+  flex-direction: column;
+  overflow-y: scroll;
+  padding: 1rem;
+  // position: relative;
 }
 </style>

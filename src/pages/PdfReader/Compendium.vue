@@ -25,8 +25,7 @@ onMounted(() => {
 
 
 <template>
-
- 
+  <div class="base">
     <ul class="lables">
       <li><i class="bi bi-chevron-right"></i></li>
       <li v-for="lable, index in lables" @click="chooseLable = index"
@@ -34,21 +33,22 @@ onMounted(() => {
         {{ lable }}
       </li>
     </ul>
-
-
-  <div>
-    <component :is="components[chooseLable]"></component>
+    <div class="content">
+      <component :is="components[chooseLable]"></component>
+    </div>
   </div>
-
 </template>
 
 <style scoped lang="less">
+.base{
+  display: flex;
+}
+
 .lables {
   display: flex;
   flex-direction: row;
   color: #111;
   border-bottom: #aaa solid 1px;
-  
 
   li {
     padding: 0.7rem 2rem;
@@ -69,7 +69,7 @@ onMounted(() => {
   }
 }
 
-.a {
-  background-color: #000;
+.content {
+  flex-grow: 1;
 }
 </style>
