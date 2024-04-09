@@ -36,7 +36,7 @@ c.next = d
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: scroll;
+  overflow-y: hidden;
   padding: 1rem;
   // position: relative;
 }

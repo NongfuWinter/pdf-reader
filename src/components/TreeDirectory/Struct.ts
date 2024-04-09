@@ -33,7 +33,9 @@ export enum STATE{
 
 export class Communication {
   private choosedId: Symbol | null
-    beforeChangeChooseId: ()=>void
+  beforeChangeChooseId: ()=>void
+
+  isDragging: boolean
 
   constructor(){
     this.choosedId = null
