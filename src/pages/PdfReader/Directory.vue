@@ -8,19 +8,21 @@ provide('treeCommuni', treeCommuni)
 
 let root = new Tree('root')
 let a = new Tree('a')
-a.leaves = new Tree('a leaf 1')
-a.leaves.next = new Tree('a leaf 2')
-a.leaves.next.next = new Tree('a leaf 3')
+a.pushleaf(new Tree('a leaf 1'))
+a.pushleaf(new Tree('a leaf 2'))
+a.pushleaf(new Tree('a leaf 3'))
 let b = new Tree('b')
-b.leaves = new Tree('b leaf')
-b.leaves.leaves = new Tree('b leaf\'s leaf')
-root.leaves = a
-a.next = b
-let c = new Tree('c')
-b.next = c
-let d = new Tree('d')
-c.next = d
+b.pushleaf(new Tree('b leaf 1'))
+b.leaves?.pushleaf(new Tree('b leaf\'s leaf'))
+b.pushleaf(new Tree('b leaf 2'))
 
+let c = new Tree('c')
+let d = new Tree('d')
+
+root.pushleaf(a)
+root.pushleaf(b)
+root.pushleaf(c)
+root.pushleaf(d)
 </script>
 
 <template>

@@ -12,20 +12,26 @@ const props = defineProps({
 let treeCommuni = inject('treeCommuni') as Communication
 
 let selfView = ref<HTMLElement | null>(null)
+let titleView = ref<HTMLElement | null>(null)
 let scapegoatView = ref<HTMLElement | null>(null)
 let leavesView = ref<HTMLElement | null>(null)
 let isLeavesOpen = ref(false)
 let isBeChoosed = ref(false)
 let isDraging = ref(false)
+let isHover = ref(false)
+let isHoverLeaf = ref(false)
 
 let dragDiffX = 0
 let dragDiffY = 0
 
-let height = ref('auto')
-
 function titleContextmenu(event: any){
-  isBeChoosed.value = true
-  treeCommuni.setChooseId(props.tree.id, ()=>{isBeChoosed.value=false})
+  if(isBeChoosed.value){
+    isBeChoosed.value = false
+  }else{
+    isBeChoosed.value = true
+    treeCommuni.setChooseId(props.tree.id, ()=>{isBeChoosed.value=false})
+  }
+  
 }
 
 function dragOver(event: any){
@@ -37,13 +43,15 @@ function dragOver(event: any){
 function dragStart(event: any){
   console.log('strat')
 
+  isLeavesOpen.value = false
+
   selfView.value!.style.visibility = 'hidden'
   dragDiffX = selfView.value!.getBoundingClientRect().left - event.clientX
   dragDiffY = selfView.value!.getBoundingClientRect().top - event.clientY
   
   isDraging.value = true
   nextTick(()=>{
-    scapegoatView.value!.style.height = selfView.value!.clientHeight+'px'
+    scapegoatView.value!.style.height = titleView.value!.clientHeight+'px'
     scapegoatView.value!.style.width = selfView.value!.clientWidth+'px'
     scapegoatView.value!.style.visibility = 'visible'
     scapegoatView.value!.style.top = selfView.value!.getBoundingClientRect().top +'px'
@@ -63,7 +71,7 @@ function dragEnd(event: any){
       top: [scapegoatView.value!.style.top, selfView.value!.getBoundingClientRect().top+'px'],
     },
     {
-      duration: 1500,
+      duration: 500,
       easing:"ease-in-out",
     }
   )
@@ -75,6 +83,32 @@ function dragEnd(event: any){
     selfView.value!.style.visibility = 'visible'
   }
   
+}
+
+function dragEnter(event: any){
+  selfView.value!.classList.add('root-choosed')
+  console.log('enter');
+  
+}
+
+function dragLeave(event: any){
+  selfView.value!.classList.remove('root-choosed')
+}
+
+function mouseenter(event: MouseEvent){
+  console.log(props.tree.content, event.currentTarget, event);
+  
+  if(event.target instanceof Node && leavesView?.value?.contains(event.target)){
+    isHoverLeaf.value = true
+  }else{
+    isHoverLeaf.value = false
+  }
+  isHover.value = true
+}
+
+function mouseleave(event: any){
+  isHover.value = false
+  isHoverLeaf.value = false
 }
 
 
@@ -90,11 +124,12 @@ onMounted(()=>{
 </script>
 
 <template>
-  <div class="root" ref="selfView" :class="{'root-choosed':isBeChoosed}" 
-  :style="{ 'heighti': height}" draggable="true" @dragstart="dragStart($event)" @dragend="dragEnd($event)">
-    <div class="title" 
-    :class="{'title-choosed':isBeChoosed}" 
-    >
+  <div class="root" ref="selfView" 
+  :class="{'root-choosed':isBeChoosed, 'root-hover-bgc':isHover, 
+  'root-hover-boeder':isHover && !isHoverLeaf}" 
+  @dragenter="dragEnter($event)" @dragleave="dragLeave($event)" 
+  @mouseover="mouseenter($event)" @mouseout="mouseleave($event)">
+    <div class="title" ref="titleView" :class="{'title-choosed':isBeChoosed}">
       <div class="content"
       @click="contentClick()"
       @contextmenu.prevent="titleContextmenu($event)"
@@ -106,7 +141,7 @@ onMounted(()=>{
 
       <div class="operation" v-if="isBeChoosed">
         <i class="bi bi-grip-horizontal" style="color: #333;"
-        @click="drag($event)"></i>
+        draggable="true" @dragstart="dragStart($event)" @dragend="dragEnd($event)"></i>
         <i class="bi bi-pencil-square" style="color: #25d;"></i>
         <i class="bi bi-plus-square" style="color: #2a0;"></i>
         <i class="bi bi-x-square" style="color: #d20;"></i>
@@ -119,10 +154,11 @@ onMounted(()=>{
         </template>
       </div>
     </div>
+    <div  class="line" :class="{'line-open': isLeavesOpen}"><div></div></div>
   </div>
 
   <Teleport to="body">
-    <div v-if="isDraging" ref="scapegoatView" class="root a" :class="{'root-choosed':isBeChoosed}">
+    <div v-if="isDraging" ref="scapegoatView" class="a">
     <div class="title title-choosed">
       <div class="content">
         <p>{{ props.tree.content }}</p>
@@ -138,24 +174,40 @@ onMounted(()=>{
 .a{
   position: fixed;
   visibility: hidden;
-  background-color: #ddd;
+  background-color: rgba(221,221,221, 0.8);
+  pointer-events: none;
+  border: #bbb solid 1px;
 }
 
-.root {
-  display: flex;
-  flex-direction: column;
+.root, .a {
   border-radius: 1rem;
   overflow: hidden;
-  // transition: all 3s;
-  
+  transition-property: background-color, border ;
+  transition-duration: .2s, .5s;
+  border: rgba(0, 0, 0, 0) solid 2px;
 }
-.root:hover{
-  background-color: #cfc;
+
+.root{
+  display: grid;
+  grid-template: 
+    "line title"
+    "line leaves"
+    /2px auto;
+}
+
+.root-hover-bgc{
+  // background-color: #cec;
+  // border-left: #aca solid 2px;
+}
+
+.root-hover-boeder{
+  background-color: #cec;
+  // border-bottom: #aca solid 2px;
 }
 
 .root-choosed {
-  background-color: #ddd;
-  height: auto;
+  background-color: #eee;
+  border: #ddd solid 2px;
 }
 
 .dragging {
@@ -163,6 +215,7 @@ onMounted(()=>{
 }
 
 .title {
+  grid-area: title;
   display: flex;
   flex-shrink: 0;
   justify-content: space-between;
@@ -201,9 +254,11 @@ onMounted(()=>{
 }
 
 .leaves {
+  grid-area: leaves;
+
   display: grid;
   grid-template-rows: 0fr;
-  margin-left: 2rem;
+  margin-left: 1.5rem;
   overflow: hidden;
   transition: .3s;
 
@@ -216,8 +271,20 @@ onMounted(()=>{
   grid-template-rows: 1fr;
 }
 
-.flutter{
-  // position: absolute;
-  // pointer-events: none;
+.line{
+  grid-area: line;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: all .3s ease-in;
+  margin-top: 1rem;
+  width: 2px;
+  &>div{
+    background-color: #aca;
+    min-height: 0;
+  }
+}
+
+.line-open{
+  grid-template-rows: 1fr;
 }
 </style>
