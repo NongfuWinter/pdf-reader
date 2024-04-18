@@ -1,6 +1,6 @@
 import * as VueRouter from 'vue-router'
-import Home from '@/pages/Home/Index.vue'
-import PdfReader from '@/pages/PdfReader/Index.vue'
+import Home from '@/pages/Home.vue'
+import PdfReader from '@/pages/PdfReader.vue'
 const routes = [
   { 
     path: '/home',

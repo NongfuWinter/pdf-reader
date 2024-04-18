@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, inject, onMounted, nextTick, h } from 'vue'
 import { Tree, Communication } from './Struct'
+import ToolsNav from './ToolsNav.vue'
 const props = defineProps({
   tree: {
     type: Tree,
@@ -46,8 +47,12 @@ function titleContextmenu(event: any){
 
 function dragOver(event: any){
   console.log('draging!');
-  scapegoatView.value!.style.top = event.clientY + dragDiffY +'px'
-  scapegoatView.value!.style.left = event.clientX +'px'
+  scapegoatView.value!.style.top = event.clientY + dragDiffY + 30+'px'
+  scapegoatView.value!.style.left = event.clientX + 20 +'px'
+}
+
+function d(event: any){
+  event.preventDefault()
 }
 
 function dragStart(event: any){
@@ -140,6 +145,10 @@ function contentClick(){
 onMounted(()=>{
   
 })
+
+let a ={
+
+}
 </script>
 
 <template>
@@ -147,6 +156,7 @@ onMounted(()=>{
   :class="{'root-choosed': isBeChoosed || isDragEnter, 'root-hover-bgc': isHover,
   'root-hover-boeder': isHover && !isHoverLeaf}" 
   @dragenter.stop="dragEnter($event)" @dragleave.stop="dragLeave($event)" 
+  @dragover="d($event)"
   @mouseover="mouseOver($event)" @mouseout="mouseleave($event)">
     <div class="title" ref="titleView" :class="{'title-choosed':isBeChoosed}">
       <div class="content"
@@ -157,51 +167,9 @@ onMounted(()=>{
         <i v-if="props.tree.leaves != null" 
         class="bi bi-chevron-right" :class="{'i-transform': isLeavesOpen}"></i>
       </div>
-<Transition name="slide-fade">
-      <div class="operation" v-if="isBeChoosed || isDragEnter">
-        
-          <template v-if="operationMenu==OPERATION_MENU.MAIN">
-            <div draggable="true" @dragstart="dragStart($event)" @dragend="dragEnd($event)">
-              <i class="bi bi-grip-horizontal" style="color: #333;"></i>
-            </div>
-            <div>
-              <i class="bi bi-pencil-square" style="color: #25d;" ></i>
-            </div>
-            <div>
-              <i class="bi bi-plus-square" style="color: #2a0;" @click="operationMenu = OPERATION_MENU.ADD"></i>
-            </div>
-            <div>
-              <i class="bi bi-x-square" style="color: #d20;" @click="operationMenu = OPERATION_MENU.DRAG"></i>
-            </div>
-          </template>
-          <template v-else-if="operationMenu==OPERATION_MENU.DRAG">
-            <div>
-              <i class="bi bi-indent" style="transform: rotateZ(-90deg);color: #25d;"></i>
-            </div>
-            <div>
-              <i class="bi bi-fullscreen"></i>
-            </div>
-            <div>
-              <i class="bi bi-indent" style="transform: rotateZ(90deg);color: #25d;"></i>
-            </div>
-            <div>
-              <i class="bi bi-reply" @click="operationMenu = OPERATION_MENU.MAIN"></i>
-            </div>
-          </template>
-
-          <template v-else-if="operationMenu==OPERATION_MENU.ADD">
-            <div>
-              <i class="bi bi-indent"></i>
-            </div>
-            <div>
-              <i class="bi bi-reply " @click="operationMenu = OPERATION_MENU.MAIN"></i>
-            </div>
-          </template>
-        
-        
-
-        
-      </div></Transition>
+      <Transition name="slide-fade">
+        <ToolsNav/>
+      </Transition>
 
     </div>
     <div class="leaves" ref="leavesView" :class="{ 'leaves-open': isLeavesOpen }">
@@ -252,14 +220,14 @@ onMounted(()=>{
   overflow: hidden;
   transition-property: background-color, border ;
   transition-duration: .2s, .5s;
-  border: rgba(0, 0, 0, 0) solid 2px;
+  border: rgba(0, 0, 0, 0) solid 1px;
 }
 
 .a{
   position: fixed;
   visibility: hidden;
   background-color: rgba(221,221,221, 0.8);
-  border: #ccc solid 2px;
+  border: #ccc solid 1px;
   padding-left: @line-width;
   pointer-events: none;
 }
@@ -278,14 +246,13 @@ onMounted(()=>{
 }
 
 .root-hover-boeder{
-  background-color: #cec;
+  // background-color: #cec;
   // border-bottom: #aca solid 2px;
 }
 
 .root-choosed {
   background-color: #eee;
-  
-  border: #ddd solid 2px;
+  border: #bbb solid 1px;
 }
 
 .dragging {
@@ -314,24 +281,6 @@ onMounted(()=>{
     }
     .i-transform{
       transform: rotateZ(90deg);
-    }
-  }
-
-  .operation {
-    display: flex;
-    align-self: stretch;
-    padding: auto 1rem;
-
-    div{
-      display: flex;
-      margin-right: 1.4rem;
-      align-items: center;
-    }
-    & i{
-      font-size: 1.1rem;
-    }
-    & i:last-child{
-      margin-right: 0;
     }
   }
 }
@@ -364,6 +313,7 @@ onMounted(()=>{
   grid-template-rows: 0fr;
   transition: all .3s ease-in;
   margin-top: 1rem;
+  margin-bottom: .5rem;
   margin-left: .5rem;
   width: @line-width;
   &>div{

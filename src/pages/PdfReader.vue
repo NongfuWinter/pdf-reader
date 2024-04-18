@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, shallowRef, triggerRef, nextTick, watch} from 'vue';
 import { useStyleStore } from '@/stores'
-import PdfDirectory from './Compendium.vue'
+import PdfDirectory from './PdfReader/Compendium.vue'
 import * as pdfjs from 'pdfjs-dist'
 // @ts-ignore
 import * as pdfWorker from 'pdfjs-dist/build/pdf.worker.mjs' 

@@ -65,6 +65,13 @@ export enum STATE{
   EDIT = 'edit',
 }
 
+export enum OPERATION_MENU{
+  NULL = 'null',
+  MAIN = 'main',
+  DRAG = 'drag',
+  ADD = 'add',
+}
+
 export class Communication {
   private choosedId: Symbol | null
   beforeChangeChooseId: ()=>void
@@ -87,5 +94,4 @@ export class Communication {
   getChooseID(){
     return this.choosedId
   }
-
 }
