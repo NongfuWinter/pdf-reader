@@ -1,70 +1,87 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { PropType } from 'vue'
-import { OPERATION_MENU } from './Struct'
+import { OPERATION_MENU as MENU, ToolsNavProps } from './Struct'
 
-const props = defineProps({
-  operationMenu: {
-    type: String as PropType<OPERATION_MENU>,
-    default: OPERATION_MENU.NULL,
-    require: true,
-  },
-  dragStart: {
-    type: Function as PropType<(event: DragEvent) => void>,
-    default: (_: DragEvent)=>{},
-    require: true,
-  },
-  dragEnd: {
-    type: Function as PropType<(event: DragEvent) => void>,
-    default: (_: DragEvent)=>{},
-    require: true,
-  } 
-})
+const {props} = defineProps<{
+  props: ToolsNavProps
+}>()
 
 const emits = defineEmits<{
 }>()
+
+enum DROP_STYLE{
+  NULL = 'null',
+  AHEAD = 'ahead',
+  BEHIND = 'behind',
+  INSIDE = 'inside',
+}
+
+const isDragEnter = ref(DROP_STYLE.NULL)
+
+function dragEnter(event: any, changeValue: DROP_STYLE){
+  isDragEnter.value = changeValue
+  console.log('TOOLS dragEnter', isDragEnter.value);
+}
+
+function dragLeave(event: any, expectValue: DROP_STYLE){
+  if(isDragEnter.value == expectValue){
+    isDragEnter.value = DROP_STYLE.NULL
+  }
+  console.log('TOOLS leave', isDragEnter.value);
+}
+
+function t(){
+  isDragEnter.value = DROP_STYLE.NULL
+  props.setMenu(MENU.NULL)
+  console.log('TTTTTTTTTTTT');
+}
 </script>
 
 <template>
-  <div class="operation" v-if="operationMenu!=OPERATION_MENU.NULL">
-    <template v-if="operationMenu==OPERATION_MENU.MAIN">
-      <div draggable="true" @dragstart="props.dragStart($event)" @dragend="dragEnd($event)">
+  <Transition name="slide-fade">
+  <div class="operation" v-if="!props.menuCompare(MENU.NULL)">
+    <template v-if="props.menuCompare(MENU.MAIN)">
+      <div draggable="true" @dragstart="props.dragStart($event)" @dragend="props.dragEnd($event)">
         <i class="bi bi-grip-horizontal" style="color: #333;"></i>
       </div>
       <div>
         <i class="bi bi-pencil-square" style="color: #25d;" ></i>
       </div>
       <div>
-        <i class="bi bi-plus-square" style="color: #2a0;" @click="operationMenu = OPERATION_MENU.ADD"></i>
+        <i class="bi bi-plus-square" style="color: #2a0;" @click="props.setMenu(MENU.ADD)"></i>
       </div>
       <div>
-        <i class="bi bi-x-square" style="color: #d20;" @click="operationMenu = OPERATION_MENU.DRAG"></i>
+        <i class="bi bi-x-square" style="color: #d20;" @click="props.setMenu(MENU.DRAG)"></i>
       </div>
     </template>
-    <template v-else-if="operationMenu==OPERATION_MENU.DRAG">
-      <div class="change">
+    <template v-else-if="props.menuCompare(MENU.DRAG)" >
+      <div class="change" :class="{'change-hover': isDragEnter == DROP_STYLE.AHEAD}" 
+      @dragenter="dragEnter($event, DROP_STYLE.AHEAD)" @dragleave="dragLeave($event,DROP_STYLE.AHEAD)"
+      @drop="t()" >
         <i class="bi bi-indent" style="transform: scale(1.2) rotateZ(-90deg)"></i>
       </div>
-      <div class="change">
+      <div class="change" :class="{'change-hover': isDragEnter == DROP_STYLE.INSIDE}" 
+      @dragenter="dragEnter($event, DROP_STYLE.INSIDE)" @dragleave="dragLeave($event, DROP_STYLE.INSIDE)">
         <i class="bi bi-fullscreen" style="transform: scale(0.9) rotateZ(-90deg)"></i>
       </div>
       <div>
         <i class="bi bi-indent" style="transform: scale(1.2) rotateZ(90deg);"></i>
       </div>
       <div>
-        <i class="bi bi-reply" @click="operationMenu = OPERATION_MENU.MAIN"></i>
+        <i class="bi bi-reply" @click="props.setMenu(MENU.MAIN)"></i>
       </div>
     </template>
 
-    <template v-else-if="operationMenu==OPERATION_MENU.ADD">
+    <template v-else-if="props.menuCompare(MENU.ADD)">
       <div>
         <i class="bi bi-indent"></i>
       </div>
       <div>
-        <i class="bi bi-reply " @click="operationMenu = OPERATION_MENU.MAIN"></i>
+        <i class="bi bi-reply " @click="props.setMenu(MENU.MAIN)"></i>
       </div>
     </template>
   </div>
+</Transition>
 </template>
 
 <style scoped lang="less">
@@ -75,8 +92,14 @@ const emits = defineEmits<{
 
   div{
     display: flex;
-    margin-right: 1.4rem;
+    margin-right: 1px;
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
     align-items: center;
+    // background-color: red;
+  }
+  div:last-child{
+    margin-right: 1rem;
   }
   & i{
     font-size: 1.1rem;
@@ -88,9 +111,12 @@ const emits = defineEmits<{
 
 .change{
   color: #25d;
+  & *{
+    pointer-events: none;
+  }
 }
 
-.change:hover{
+.change-hover{
   position: relative;
   transition: color 1s initial;
   animation: some .8s infinite;
@@ -101,5 +127,19 @@ const emits = defineEmits<{
     color: #59f;
     transform: scale(1.5);
   }
+}
+
+.slide-fade-enter-active {
+  transition: all .3s ease-in;
+}
+
+.slide-fade-leave-active {
+  transition: all .3s ease-in;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(200px);
+  opacity: 0;
 }
 </style>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Tree, Communication } from '@/components/TreeDirectory/Struct'
+import { Tree, Communication } from '@/components/TreeDirectory/ExposeStruct'
 import TreeView from '@/components/TreeDirectory/TreeView.vue';
 import { ref, provide } from 'vue'
 

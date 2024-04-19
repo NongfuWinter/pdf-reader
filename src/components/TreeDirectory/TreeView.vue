@@ -1,20 +1,12 @@
 <script setup lang="ts">
 import { ref, inject, onMounted, nextTick, h } from 'vue'
-import { Tree, Communication } from './Struct'
+import { OPERATION_MENU, ToolsNavProps } from './Struct'
+import { Tree, Communication } from './ExposeStruct'
 import ToolsNav from './ToolsNav.vue'
-const props = defineProps({
-  tree: {
-    type: Tree,
-    default: new Tree(),
-    require: true,
-  },
-})
 
-enum OPERATION_MENU{
-  MAIN = 'main',
-  DRAG = 'drag',
-  ADD = 'add',
-}
+const props = defineProps<{
+  tree: Tree
+}>()
 
 let treeCommuni = inject('treeCommuni') as Communication
 
@@ -24,7 +16,7 @@ let scapegoatView = ref<HTMLElement | null>(null)
 let leavesView = ref<HTMLElement | null>(null)
 
 let isLeavesOpen = ref(false)
-let isBeChoosed = ref(false)
+let isEdit = ref(false)
 let isDraging = ref(false)
 let isHover = ref(false)
 let isHoverLeaf = ref(false)
@@ -34,14 +26,16 @@ let dragEnterNumber = 0
 let dragDiffX = 0
 let dragDiffY = 0
 
-let operationMenu = ref(OPERATION_MENU.MAIN)
+let operationMenu = ref(OPERATION_MENU.NULL)
 
 function titleContextmenu(event: any){
-  if(isBeChoosed.value){
-    isBeChoosed.value = false
+  if(isEdit.value){
+    isEdit.value = false
+    operationMenu.value = OPERATION_MENU.NULL
   }else{
-    isBeChoosed.value = true
-    treeCommuni.setChooseId(props.tree.id, ()=>{isBeChoosed.value=false})
+    isEdit.value = true
+    operationMenu.value = OPERATION_MENU.MAIN
+    treeCommuni.setChooseId(props.tree.id, ()=>{isEdit.value=false})
   }
 }
 
@@ -55,7 +49,7 @@ function d(event: any){
   event.preventDefault()
 }
 
-function dragStart(event: any){
+function dragStart(event: DragEvent){
   console.log('strat')
 
   isLeavesOpen.value = false
@@ -76,8 +70,8 @@ function dragStart(event: any){
   document.addEventListener('dragover', dragOver)
 }
 
-function dragEnd(event: any){
-  console.log('is end!', scapegoatView.value!.style.top);
+function dragEnd(event: DragEvent){
+  console.log('is end!');
   document.removeEventListener('dragover', dragOver)
   let fin = scapegoatView.value!.animate(
     {
@@ -113,7 +107,12 @@ function dragLeave(event: any){
   dragEnterNumber--
   if(dragEnterNumber == 0){
     isDragEnter.value = false
+    operationMenu.value = OPERATION_MENU.NULL
   }
+}
+
+function drop(){
+  isDragEnter.value = false
 }
 
 function mouseOver(event: MouseEvent){
@@ -146,19 +145,22 @@ onMounted(()=>{
   
 })
 
-let a ={
-
+let toolsNavProps: ToolsNavProps = {
+  menuCompare: (expect: OPERATION_MENU) => expect == operationMenu.value,
+  setMenu: (menu: OPERATION_MENU) => {operationMenu.value=menu},
+  dragStart,
+  dragEnd,
 }
 </script>
 
 <template>
   <div class="root" ref="selfView" 
-  :class="{'root-choosed': isBeChoosed || isDragEnter, 'root-hover-bgc': isHover,
+  :class="{'root-choosed': isEdit || isDragEnter, 'root-hover-bgc': isHover,
   'root-hover-boeder': isHover && !isHoverLeaf}" 
   @dragenter.stop="dragEnter($event)" @dragleave.stop="dragLeave($event)" 
-  @dragover="d($event)"
+  @dragover="d($event)" @drop="drop"
   @mouseover="mouseOver($event)" @mouseout="mouseleave($event)">
-    <div class="title" ref="titleView" :class="{'title-choosed':isBeChoosed}">
+    <div class="title" ref="titleView" :class="{'title-choosed':isEdit}">
       <div class="content"
       @click="contentClick()"
       @contextmenu.prevent="titleContextmenu($event)"
@@ -167,9 +169,8 @@ let a ={
         <i v-if="props.tree.leaves != null" 
         class="bi bi-chevron-right" :class="{'i-transform': isLeavesOpen}"></i>
       </div>
-      <Transition name="slide-fade">
-        <ToolsNav/>
-      </Transition>
+      
+        <ToolsNav :props="toolsNavProps"/>
 
     </div>
     <div class="leaves" ref="leavesView" :class="{ 'leaves-open': isLeavesOpen }">
@@ -179,7 +180,7 @@ let a ={
         </template>
       </div>
     </div>
-    <div class="line" :class="{'line-open': isLeavesOpen, 'line-choosed': isBeChoosed}">
+    <div class="line" :class="{'line-open': isLeavesOpen, 'line-choosed': isEdit}">
       <div></div>
     </div>
   </div>
@@ -199,19 +200,7 @@ let a ={
 </template>
 
 <style scoped lang="less">
-.slide-fade-enter-active {
-  transition: all .3s ease-in;
-}
 
-.slide-fade-leave-active {
-  transition: all .3s ease-in;
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-  transform: translateX(200px);
-  opacity: 0;
-}
 
 @line-width: 2px;
 
