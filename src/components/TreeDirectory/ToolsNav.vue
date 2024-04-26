@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { OPERATION_MENU as MENU, ToolsNavProps } from './Struct'
+import { nextTick } from 'process';
 
 const {props} = defineProps<{
   props: ToolsNavProps
@@ -35,17 +36,22 @@ function t(){
   props.setMenu(MENU.NULL)
   console.log('TTTTTTTTTTTT');
 }
+
+function beEdit(){
+  props.setEditTitle()
+  props.onFocus()
+}
 </script>
 
 <template>
-  <Transition name="slide-fade">
+<Transition name="slide-fade">
   <div class="operation" v-if="!props.menuCompare(MENU.NULL)">
     <template v-if="props.menuCompare(MENU.MAIN)">
       <div draggable="true" @dragstart="props.dragStart($event)" @dragend="props.dragEnd($event)">
         <i class="bi bi-grip-horizontal" style="color: #333;"></i>
       </div>
       <div>
-        <i class="bi bi-pencil-square" style="color: #25d;" ></i>
+        <i class="bi bi-pencil-square" style="color: #25d;"  @click="beEdit"></i>
       </div>
       <div>
         <i class="bi bi-plus-square" style="color: #2a0;" @click="props.setMenu(MENU.ADD)"></i>
@@ -134,7 +140,7 @@ function t(){
 }
 
 .slide-fade-leave-active {
-  transition: all .3s ease-in;
+  transition: all .2s ease-in;
 }
 
 .slide-fade-enter-from,

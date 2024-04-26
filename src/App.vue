@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useStyleStore } from '@/stores'
 import { onBeforeMount} from 'vue'
-import Index from '@/pages/Index.vue'
+import Index from '@/pages/index.vue'
 
 const style = useStyleStore()
 

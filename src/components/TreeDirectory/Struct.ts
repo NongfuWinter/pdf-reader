@@ -13,6 +13,8 @@ export enum OPERATION_MENU{
 export interface ToolsNavProps{
   menuCompare: (expection: OPERATION_MENU) => boolean
   setMenu: (menu: OPERATION_MENU) => void
+  setEditTitle: ()=>void
+  onFocus: ()=>void
   dragStart: (event: DragEvent) => void
   dragEnd: (event: DragEvent) => void
 }

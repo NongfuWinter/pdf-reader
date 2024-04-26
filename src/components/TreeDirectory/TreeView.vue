@@ -12,11 +12,13 @@ let treeCommuni = inject('treeCommuni') as Communication
 
 let selfView = ref<HTMLElement | null>(null)
 let titleView = ref<HTMLElement | null>(null)
+let titleInputView = ref<HTMLElement | null>(null)
 let scapegoatView = ref<HTMLElement | null>(null)
 let leavesView = ref<HTMLElement | null>(null)
 
 let isLeavesOpen = ref(false)
 let isEdit = ref(false)
+let isEditTitle = ref(false)
 let isDraging = ref(false)
 let isHover = ref(false)
 let isHoverLeaf = ref(false)
@@ -35,7 +37,10 @@ function titleContextmenu(event: any){
   }else{
     isEdit.value = true
     operationMenu.value = OPERATION_MENU.MAIN
-    treeCommuni.setChooseId(props.tree.id, ()=>{isEdit.value=false})
+    treeCommuni.setChooseId(props.tree.id, ()=>{
+      isEdit.value=false
+      operationMenu.value = OPERATION_MENU.NULL
+    })
   }
 }
 
@@ -97,26 +102,28 @@ function dragEnter(event: any){
   isDragEnter.value = true
   operationMenu.value = OPERATION_MENU.DRAG
   
-  console.log('enter: ', props.tree.content, event.target);
   dragEnterNumber++
+  console.log('enter: ', dragEnterNumber, props.tree.content);
 
 }
 
 function dragLeave(event: any){
-  console.log('leave: ', props.tree.content, event.target);
   dragEnterNumber--
   if(dragEnterNumber == 0){
     isDragEnter.value = false
     operationMenu.value = OPERATION_MENU.NULL
   }
+  console.log('leave: ', dragEnterNumber, isDragEnter.value, props.tree.content);
 }
 
 function drop(){
   isDragEnter.value = false
+  operationMenu.value = OPERATION_MENU.NULL
+  dragEnterNumber = 0
 }
 
 function mouseOver(event: MouseEvent){
-  console.log('mouseOver', props.tree.content, event.currentTarget, event);
+  console.log('mouseOver');
   if(isDraging.value){
     return
   }
@@ -148,6 +155,13 @@ onMounted(()=>{
 let toolsNavProps: ToolsNavProps = {
   menuCompare: (expect: OPERATION_MENU) => expect == operationMenu.value,
   setMenu: (menu: OPERATION_MENU) => {operationMenu.value=menu},
+  setEditTitle: ()=>{isEditTitle.value = !isEditTitle.value},
+  onFocus: ()=>{
+    nextTick(()=>{
+      titleInputView.value?.focus()
+    })
+    
+  },
   dragStart,
   dragEnd,
 }
@@ -156,26 +170,29 @@ let toolsNavProps: ToolsNavProps = {
 <template>
   <div class="root" ref="selfView" 
   :class="{'root-choosed': isEdit || isDragEnter, 'root-hover-bgc': isHover,
-  'root-hover-boeder': isHover && !isHoverLeaf}" 
+  'root-hover-boeder': isHover && !isHoverLeaf, 'root-edit-title': isEditTitle}" 
   @dragenter.stop="dragEnter($event)" @dragleave.stop="dragLeave($event)" 
-  @dragover="d($event)" @drop="drop"
+  @dragover="d($event)" @drop="drop" @focus=""
   @mouseover="mouseOver($event)" @mouseout="mouseleave($event)">
     <div class="title" ref="titleView" :class="{'title-choosed':isEdit}">
       <div class="content"
       @click="contentClick()"
       @contextmenu.prevent="titleContextmenu($event)"
       >
-        <p>{{ props.tree.content }}</p>
-        <i v-if="props.tree.leaves != null" 
-        class="bi bi-chevron-right" :class="{'i-transform': isLeavesOpen}"></i>
+        <p v-if="!isEditTitle">{{ props.tree.content }}</p>
+        <input v-else ref="titleInputView" :class="{'p': !isEditTitle}" type="text"
+        v-model="props.tree.content" @blur="isEditTitle = false"/>
+        <i v-if="props.tree.leaves != null && !isEditTitle" 
+        class="bi bi-chevron-right" :class="{'i-transform': isLeavesOpen}">
+        </i>
       </div>
       
-        <ToolsNav :props="toolsNavProps"/>
+      <ToolsNav :props="toolsNavProps"/>
 
     </div>
     <div class="leaves" ref="leavesView" :class="{ 'leaves-open': isLeavesOpen }">
       <div>
-        <template  v-for="leaf in props.tree">
+        <template v-for="leaf in props.tree">
           <TreeView v-if="leaf != null" :tree="leaf"></TreeView>
         </template>
       </div>
@@ -200,8 +217,6 @@ let toolsNavProps: ToolsNavProps = {
 </template>
 
 <style scoped lang="less">
-
-
 @line-width: 2px;
 
 .root, .a {
@@ -210,6 +225,7 @@ let toolsNavProps: ToolsNavProps = {
   transition-property: background-color, border ;
   transition-duration: .2s, .5s;
   border: rgba(0, 0, 0, 0) solid 1px;
+  
 }
 
 .a{
@@ -227,6 +243,7 @@ let toolsNavProps: ToolsNavProps = {
     "line title"
     "line leaves"
     /2px auto;
+  transition: height 3s;
 }
 
 .root-hover-bgc{
@@ -244,6 +261,10 @@ let toolsNavProps: ToolsNavProps = {
   border: #bbb solid 1px;
 }
 
+.root-edit-title {
+  border-color: #aae;
+}
+
 .dragging {
   opacity: 1;
 }
@@ -259,13 +280,23 @@ let toolsNavProps: ToolsNavProps = {
     display: flex;
     flex-grow: 1;
     align-items: center;
-    padding: .6rem 1rem;
-    p {
-      vertical-align: middle;
-      margin: 0 1.5rem 0 0;
-      user-select: none;
+    // padding: .6rem 1rem;
+    
+    p{
+      padding: .7rem 1rem;
+    }
+ 
+    input{
+      display: flex;
+      background-color: rgba(0, 0, 10, 0);
+      height: calc(1.7rem - 3px);
+      padding: 0.45rem 1rem;
+      outline: none;
+      border: none;
+      color: #333;
     }
     i{
+      margin-left: 1rem;
       transition: transform .5s;
     }
     .i-transform{
