@@ -23,6 +23,7 @@ let isDraging = ref(false)
 let isHover = ref(false)
 let isHoverLeaf = ref(false)
 let isDragEnter = ref(false)
+let isBeSilent = ref(false)
 
 let dragEnterNumber = 0 
 let dragDiffX = 0
@@ -155,8 +156,13 @@ onMounted(()=>{
 let toolsNavProps: ToolsNavProps = {
   menuCompare: (expect: OPERATION_MENU) => expect == operationMenu.value,
   setMenu: (menu: OPERATION_MENU) => {operationMenu.value=menu},
-  setEditTitle: ()=>{isEditTitle.value = !isEditTitle.value},
+  setEditTitle: ()=>{
+    isEditTitle.value = !isEditTitle.value
+  },
   onFocus: ()=>{
+    if(!isEditTitle.value){
+      return
+    }
     nextTick(()=>{
       titleInputView.value?.focus()
     })
@@ -175,13 +181,15 @@ let toolsNavProps: ToolsNavProps = {
   @dragover="d($event)" @drop="drop" @focus=""
   @mouseover="mouseOver($event)" @mouseout="mouseleave($event)">
     <div class="title" ref="titleView" :class="{'title-choosed':isEdit}">
-      <div class="content"
+      <div class="content" :class="{'content-edit': isEditTitle}"
       @click="contentClick()"
       @contextmenu.prevent="titleContextmenu($event)"
       >
         <p v-if="!isEditTitle">{{ props.tree.content }}</p>
         <input v-else ref="titleInputView" :class="{'p': !isEditTitle}" type="text"
-        v-model="props.tree.content" @blur="isEditTitle = false"/>
+        v-model="props.tree.content" 
+        @blur="isEditTitle = false" @contextmenu.stop
+        @click.stop />
         <i v-if="props.tree.leaves != null && !isEditTitle" 
         class="bi bi-chevron-right" :class="{'i-transform': isLeavesOpen}">
         </i>
@@ -204,15 +212,15 @@ let toolsNavProps: ToolsNavProps = {
 
   <Teleport to="body">
     <div v-if="isDraging" ref="scapegoatView" class="a">
-    <div class="title title-choosed">
-      <div class="content">
-        <p>{{ props.tree.content }}</p>
-        <i v-if="props.tree.leaves != null" class="bi bi-chevron-right" 
-        :class="{'i-tramsition': isLeavesOpen}"
-        ></i>
+      <div class="title title-choosed">
+        <div class="content">
+          <p>{{ props.tree.content }}</p>
+          <i v-if="props.tree.leaves != null" class="bi bi-chevron-right" 
+          :class="{'i-tramsition': isLeavesOpen}"
+          ></i>
+        </div>
       </div>
     </div>
-  </div>
   </Teleport>
 </template>
 
@@ -222,10 +230,9 @@ let toolsNavProps: ToolsNavProps = {
 .root, .a {
   border-radius: 1rem;
   overflow: hidden;
-  transition-property: background-color, border ;
-  transition-duration: .2s, .5s;
+  transition-property: background-color, border;
+  transition-duration: .3s, .4s;
   border: rgba(0, 0, 0, 0) solid 1px;
-  
 }
 
 .a{
@@ -243,7 +250,6 @@ let toolsNavProps: ToolsNavProps = {
     "line title"
     "line leaves"
     /2px auto;
-  transition: height 3s;
 }
 
 .root-hover-bgc{
@@ -257,12 +263,13 @@ let toolsNavProps: ToolsNavProps = {
 }
 
 .root-choosed {
-  background-color: #eee;
+  background-color: rgba(238, 238, 238, 0.8);
   border: #bbb solid 1px;
 }
 
 .root-edit-title {
-  border-color: #aae;
+  background-color: rgba(225, 240, 252, 0.8);
+  border-color: #b0caf0;
 }
 
 .dragging {
@@ -280,21 +287,23 @@ let toolsNavProps: ToolsNavProps = {
     display: flex;
     flex-grow: 1;
     align-items: center;
-    // padding: .6rem 1rem;
+
+    p, input{
+      padding: .7rem 1rem;
+    }
     
     p{
-      padding: .7rem 1rem;
     }
  
     input{
-      display: flex;
-      background-color: rgba(0, 0, 10, 0);
-      height: calc(1.7rem - 3px);
-      padding: 0.45rem 1rem;
+      flex-grow: 1;
+      background-color: rgba(225, 0, 10, 0);
+      height: 1rem;
       outline: none;
       border: none;
       color: #333;
     }
+
     i{
       margin-left: 1rem;
       transition: transform .5s;
@@ -302,6 +311,10 @@ let toolsNavProps: ToolsNavProps = {
     .i-transform{
       transform: rotateZ(90deg);
     }
+  }
+
+  .content-edit{
+    border-right: #9be dotted 2px;
   }
 }
 
