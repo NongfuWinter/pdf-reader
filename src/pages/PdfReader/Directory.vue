@@ -23,6 +23,10 @@ root.pushleaf(a)
 root.pushleaf(b)
 root.pushleaf(c)
 root.pushleaf(d)
+
+function test(){
+  
+}
 </script>
 
 <template>
