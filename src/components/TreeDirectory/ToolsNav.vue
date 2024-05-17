@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { OPERATION_MENU as MENU, ToolsNavProps } from './Struct'
-import { nextTick } from 'process';
 
 const {props} = defineProps<{
   props: ToolsNavProps

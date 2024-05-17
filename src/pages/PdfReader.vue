@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { onMounted, ref, shallowRef, triggerRef, nextTick, watch} from 'vue';
+import { onMounted, onUnmounted, ref, shallowRef, triggerRef, nextTick, watch, onBeforeMount } from 'vue';
 import { useStyleStore } from '@/stores'
 import PdfDirectory from './PdfReader/Compendium.vue'
+import { Log } from '@/tools/Log.ts'
 import * as pdfjs from 'pdfjs-dist'
 // @ts-ignore
 import * as pdfWorker from 'pdfjs-dist/build/pdf.worker.mjs' 
@@ -86,7 +87,7 @@ class ForeLoadNode implements LoadNode{
 
   initObserver(){
     return new IntersectionObserver(
-      ([entry], intersectionObserver) =>{
+      ([entry], _) =>{
         if(!entry.isIntersecting){
           return
         }else{
@@ -162,6 +163,8 @@ class AftLoadNode implements LoadNode{
   createPageNode(): PageNode{
     const newPageNode = new PageNode(this.pp)
     const { isContinuing, isEnd } = this.detection()
+    console.log(isEnd);
+    
 
 
     if(isContinuing){
@@ -176,7 +179,7 @@ class AftLoadNode implements LoadNode{
 
   initObserver(){
     return new IntersectionObserver(
-      ([entry], intersectionObserver) =>{
+      ([entry], _) =>{
         if(!entry.isIntersecting){
           return
         }else{
@@ -529,8 +532,8 @@ const pdfView = ref<HTMLInputElement | null>() // pdf渲染组件
 const style = useStyleStore() // 全局尺寸样式data
 
 // 定义常数
-const initialPageNumber = 10
-const PAGE_ARRAY_MAX_LENGTH = 30
+// const initialPageNumber = 10
+// const PAGE_ARRAY_MAX_LENGTH = 30
 
 let pageNodeId = 1
 let currentNodeTop = 0
@@ -539,12 +542,13 @@ let lostHeigh = 0
 let isHandleScroll = true
 
 // 页码路由列表
-const pageNumberRouterList = ref([])
+// const pageNumberRouterList = ref([])
 
 var url = '/1.pdf'
 
 // The workerSrc property shall be specified
-pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
+// @ts-ignore
+pdfjs.GlobalWorkerOptions.workerSrc = '@/../node_modules/pdfjs-dist/build/pdf.worker.mjs'
 
 // Asynchronous download of PDF
 const loadingTask = pdfjs.getDocument(url)
@@ -630,6 +634,8 @@ function setAllPageWidth(newWidth: number){
   // pageContainerList.value.forEach(container => {
   //   setPageWidth(container, newWidth)
   // })
+  console.log(newWidth);
+  
 }
 
 function setCurrentNode(pageNode: PageNode){
@@ -650,6 +656,17 @@ function handleScroll(){
 onMounted(()=>{
   pdfRender(pdfView.value!.offsetWidth)
   console.log('list width: ', pdfView.value!.offsetWidth, pageLinkList.value.head)
+})
+
+onUnmounted(()=>{
+  Log.create('Unmounted', 'test')
+  pdfDoc.destroy()
+  loadingTask.destroy()
+})
+
+onBeforeMount(()=>{
+  console.error('1111111111111111111111111111')
+
 })
 
 // 自定义指令
@@ -746,6 +763,7 @@ function t1(event: any){
   }
 
   .pdfView{
+    flex-grow: 10;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -759,7 +777,7 @@ function t1(event: any){
       justify-content:center;
       height: 3rem;
       font-size: 1rem;
-      background-color: #161823;
+      background-color: #ccc;
     }
   }
   .pdfList>*{
@@ -767,12 +785,13 @@ function t1(event: any){
     flex: 1;
   }
 
-  // .editor{
-  //   // background-color: #ccc;
-  // }
+  .editor{
+    flex-grow: 8;
+  }
 
-  // .note{
-  //   // background-color: #ccc;
-  // }
+  .note{
+    flex-grow: 9;
+    // background-color: #ccc;
+  }
 }
 </style>

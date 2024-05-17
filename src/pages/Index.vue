@@ -13,8 +13,9 @@ function f(){
 <template>
   <div class="base">
     <nav class="nav">
+      <p @click="router.push({path: '/projectIntro'})">介绍</p>
       <p @click="f()">导航</p>
-      <p @click="t()">pdf-read</p>
+      <p @click="t()">我的书籍</p>
     </nav>
     <div class="content">
       <RouterView></RouterView>
@@ -33,7 +34,7 @@ function f(){
 .nav{
   display: flex;
   flex-direction: row;
-  height: 3rem;
+  height: 3.5rem;
   border-bottom: #aaa solid 1px;
   align-items: center;
   justify-items: center;

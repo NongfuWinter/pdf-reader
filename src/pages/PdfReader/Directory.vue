@@ -31,19 +31,57 @@ function test(){
 
 <template>
   <div class="base">
-    <template v-for="leaf in root">
-      <TreeView v-if="leaf != null" :tree="leaf"></TreeView>
-    </template>
+    <div class="root-operation">
+      <div class="operation">
+        <i class="bi bi-chevron-bar-expand" style="color: #44b;"></i>
+      </div>
+      <div class="operation">
+        <i class="bi bi-plus-square" style="color: #4b0;" ></i>
+      </div>
+      <div class="operation">
+        <i class="bi bi-chevron-bar-contract" style="color: #a0a;"></i>
+      </div>
+    </div>
+
+    <div class="leaves">
+      <template v-for="leaf in root">
+        <TreeView v-if="leaf != null" :tree="leaf"></TreeView>
+      </template>
+    </div>
   </div>
 </template>
 
 <style scoped lang="less">
+
 .base {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   overflow-y: hidden;
-  padding: 1rem;
+  // padding: 1rem;
   // position: relative;
 }
+
+.root-operation{
+  display: flex;
+  justify-content: end;
+  padding: .6rem .8rem;
+  border-bottom: 1px solid #ccc;
+
+  .operation{
+    margin-left: 2rem;
+    i{
+      font-size: 1.1rem;
+    }
+  }
+  
+  .operation:last-child{
+    margin-right: 1rem;
+  }
+}
+
+.leaves{
+  padding: 1rem;
+}
+
 </style>

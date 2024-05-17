@@ -1,6 +1,7 @@
 import * as VueRouter from 'vue-router'
 import Home from '@/pages/Home.vue'
 import PdfReader from '@/pages/PdfReader.vue'
+import ProjectIntro from '@/pages/ProjectIntro.vue'
 const routes = [
   { 
     path: '/home',
@@ -11,8 +12,12 @@ const routes = [
     redirect: '/home',
   },
   { 
+    path: '/projectIntro',
+    component: ProjectIntro,
+  },
+  { 
     path: '/pdfReader',
-    component: PdfReader 
+    component: PdfReader
   },
 ]
 
