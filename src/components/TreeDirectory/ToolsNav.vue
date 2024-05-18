@@ -56,7 +56,7 @@ function beEdit(){
         <i class="bi bi-plus-square" style="color: #2a0;" @click="props.setMenu(MENU.ADD)"></i>
       </div>
       <div>
-        <i class="bi bi-x-square" style="color: #d20;" @click="props.setMenu(MENU.DRAG)"></i>
+        <i class="bi bi-x-square" style="color: #d20;" @click="props.delete()"></i>
       </div>
     </template>
     <template v-else-if="props.menuCompare(MENU.DRAG)" >

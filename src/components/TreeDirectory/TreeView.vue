@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { ref, inject, onMounted, nextTick, h } from 'vue'
+import { ref, inject, onMounted, nextTick, h, ShallowRef, triggerRef } from 'vue'
 import { OPERATION_MENU, ToolsNavProps } from './Struct'
 import { Tree, Communication } from './ExposeStruct'
 import ToolsNav from './ToolsNav.vue'
+import { Log } from '@/tools/Log';
 
 const props = defineProps<{
   tree: Tree
 }>()
+
+const root = inject('root') as ShallowRef<Tree>
 
 let treeCommuni = inject('treeCommuni') as Communication
 
@@ -30,6 +33,10 @@ let dragDiffX = 0
 let dragDiffY = 0
 
 let operationMenu = ref(OPERATION_MENU.NULL)
+
+function ttt(){
+  props.tree.leaves.next!.disengage()
+}
 
 function titleContextmenu(event: any){
   if(isEdit.value){
@@ -168,6 +175,12 @@ let toolsNavProps: ToolsNavProps = {
     })
     
   },
+  delete: ()=>{
+    Log.delete('delete tree', props.tree)
+    props.tree.disengage()
+
+    triggerRef(root)
+  },
   dragStart,
   dragEnd,
 }
@@ -190,7 +203,7 @@ let toolsNavProps: ToolsNavProps = {
         v-model="props.tree.content" 
         @blur="isEditTitle = false" @contextmenu.stop
         @click.stop />
-        <i v-if="props.tree.leaves != null && !isEditTitle" 
+        <i v-if="props.tree.leaves.next != null && !isEditTitle" 
         class="bi bi-chevron-right" :class="{'i-transform': isLeavesOpen}">
         </i>
       </div>
@@ -200,8 +213,9 @@ let toolsNavProps: ToolsNavProps = {
     </div>
     <div class="leaves" ref="leavesView" :class="{ 'leaves-open': isLeavesOpen }">
       <div>
-        <template v-for="leaf in props.tree">
-          <TreeView v-if="leaf != null" :tree="leaf"></TreeView>
+        <template v-for="leaf in props.tree.leaves">
+          <TreeView v-if="leaf != null" :tree="leaf" :key="leaf.id"></TreeView>
+          
         </template>
       </div>
     </div>
@@ -226,6 +240,16 @@ let toolsNavProps: ToolsNavProps = {
 
 <style scoped lang="less">
 @line-width: 2px;
+
+.tree-enter-active,
+.tree-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.tree-enter-from,
+.tree-leave-to {
+  opacity: 0;
+}
 
 .root, .a {
   border-radius: 1rem;

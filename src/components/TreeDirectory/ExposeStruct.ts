@@ -1,19 +1,65 @@
-export class Tree {
-  id: Symbol
-  content: string
-  prior: Tree | null
-  next: Tree | null
-  leaves: Tree | null
-  constructor(content?: string) {
-    this.id = Symbol()
-    this.content = content ?? 'Empty'
+class PureNode{
+  prior: PureNode | null
+  next: PureNode | null
+
+  constructor() {
     this.prior = null
     this.next = null
-    this.leaves = null
   } 
 
+  connect(prior: PureNode|null, next: PureNode|null){
+    this.disengage()
+    this.prior = prior
+    this.next = next
+
+    if(prior){
+      prior.next = this
+    }
+    if(next){
+      next.prior = this
+    }
+  }
+  
+  disengage(){
+    if(this.prior){
+      this.prior.next = this.next
+    }
+    if(this.next){
+      this.next.prior = this.prior
+    }
+    this.prior = null
+    this.next = null
+  }
+}
+
+
+export class Tree extends PureNode{
+  id: symbol
+  content: string
+  leaves: Leaves
+  
+  constructor(content?: string) {
+    super()
+    this.id = Symbol()
+    this.content = content ?? 'Empty'
+    this.leaves = new Leaves(this)
+  } 
+
+  pushleaf(leaf: Tree){
+    this.leaves.push(leaf)
+  }
+}
+
+export class Leaves extends PureNode{
+  root: Tree
+
+  constructor(root: Tree) {
+    super()
+    this.root = root
+  }
+
   [Symbol.iterator]() {
-    let leaf = this.leaves
+    let leaf = this.next
     return {
       next: () => {
         if(leaf == null){
@@ -21,44 +67,23 @@ export class Tree {
         }else{
           let result = leaf
           leaf = leaf.next
-          return {value: result, done: false}
+          return {value: result as Tree, done: false}
         }
       }
     }
   }
 
-  connect(priorTree: Tree, nextTree: Tree){
-    this.disengage()
-    this.prior = priorTree
-    this.next = nextTree
-    priorTree.next = this
-    nextTree.prior = this
-  }
-
-  disengage(){
-    if(this.prior){
-      this.prior.next = null
-      this.prior = null
+  push(leaf: Tree){
+    let currentLeaf: PureNode = this
+    while(currentLeaf.next){
+      currentLeaf = currentLeaf.next
     }
-    if(this.next){
-      this.next.prior = null
-      this.next = null
-    }
-  }
-
-  pushleaf(leaf: Tree){
-    let currentLeaf = this.leaves
-    if(currentLeaf){
-      while(currentLeaf.next){
-        currentLeaf = currentLeaf.next
-      }
-      currentLeaf.next = leaf
-    }else{
-      this.leaves = leaf
-    }
+    leaf.connect(currentLeaf, null)
   }
 
 }
+
+
 
 export class Communication {
   private choosedId: Symbol | null

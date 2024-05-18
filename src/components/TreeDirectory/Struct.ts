@@ -15,6 +15,7 @@ export interface ToolsNavProps{
   setMenu: (menu: OPERATION_MENU) => void
   setEditTitle: ()=>void
   onFocus: ()=>void
+  delete: ()=>void
   dragStart: (event: DragEvent) => void
   dragEnd: (event: DragEvent) => void
 }
